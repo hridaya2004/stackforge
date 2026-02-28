@@ -102,10 +102,34 @@ do_update() {
     echo "Update complete."
 }
 
+do_pin() {
+    # Unpin digests so docker compose pull resolves :latest
+    for dir in $(get_stacks); do
+        unpin_digests "$dir/docker-compose.yaml"
+    done
+
+    echo "Pulling latest images..."
+    local pids=()
+    for dir in $(get_stacks); do
+        docker compose -f "$dir/docker-compose.yaml" pull &
+        pids+=($!)
+    done
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+    done
+
+    echo "Pinning digests..."
+    for dir in $(get_stacks); do
+        pin_digests "$dir/docker-compose.yaml"
+    done
+    echo "Done."
+}
+
 usage() {
-    echo "Usage: $(basename "$0") {update|run|stop}"
+    echo "Usage: $(basename "$0") {update|pin|run|stop}"
     echo
     echo "  update  - Pull latest images, pin digests, restart running containers"
+    echo "  pin     - Pull latest images and pin digests without restarting"
     echo "  run     - Start all stacks"
     echo "  stop    - Stop all stacks"
     exit 1
@@ -113,6 +137,7 @@ usage() {
 
 case "${1:-}" in
     update) do_update ;;
+    pin)    do_pin ;;
     run)    do_run ;;
     stop)   do_stop ;;
     *)      usage ;;
