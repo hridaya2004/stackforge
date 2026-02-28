@@ -11,6 +11,37 @@ is_running() {
     docker compose -f "$1/docker-compose.yaml" ps -q 2>/dev/null | grep -q .
 }
 
+# Strip @sha256:... from image lines so docker compose pull works
+unpin_digests() {
+    sed -i -E 's|(image:[[:space:]]+)([^@]+)@sha256:[a-f0-9]+|\1\2|' "$1"
+}
+
+# Replace each image reference with its pinned sha256 digest
+pin_digests() {
+    local file="$1"
+    local tmpfile
+    tmpfile="$(mktemp)"
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^([[:space:]]*image:[[:space:]]*)(.+)$ ]]; then
+            local prefix="${BASH_REMATCH[1]}"
+            local name="${BASH_REMATCH[2]}"
+            # Get the repo digest (e.g. registry/image@sha256:abc123)
+            local pinned
+            pinned="$(docker inspect --format='{{index .RepoDigests 0}}' "$name" 2>/dev/null || true)"
+            if [ -n "$pinned" ]; then
+                echo "${prefix}${pinned}"
+            else
+                echo "$line"
+            fi
+        else
+            echo "$line"
+        fi
+    done < "$file" > "$tmpfile"
+
+    mv "$tmpfile" "$file"
+}
+
 do_stop() {
     echo "Stopping stacks..."
     for dir in $(get_stacks); do
@@ -40,6 +71,11 @@ do_update() {
         done
     fi
 
+    # Unpin digests so docker compose pull resolves :latest
+    for dir in $(get_stacks); do
+        unpin_digests "$dir/docker-compose.yaml"
+    done
+
     echo "Pulling latest images..."
     local pids=()
     for dir in $(get_stacks); do
@@ -48,6 +84,12 @@ do_update() {
     done
     for pid in "${pids[@]}"; do
         wait "$pid"
+    done
+
+    # Pin images to their pulled sha256 digests
+    echo "Pinning digests..."
+    for dir in $(get_stacks); do
+        pin_digests "$dir/docker-compose.yaml"
     done
 
     if [ ${#running_stacks[@]} -gt 0 ]; then
@@ -63,7 +105,7 @@ do_update() {
 usage() {
     echo "Usage: $(basename "$0") {update|run|stop}"
     echo
-    echo "  update  - Pull latest images, restart running containers"
+    echo "  update  - Pull latest images, pin digests, restart running containers"
     echo "  run     - Start all stacks"
     echo "  stop    - Stop all stacks"
     exit 1
