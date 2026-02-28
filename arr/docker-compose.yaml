@@ -30,7 +30,7 @@ services:
     container_name: downloader
     environment:
       - QBT_LEGAL_NOTICE=confirm
-      - QBT_VERSION=5.1.0-1
+      - QBT_VERSION=5.1.4-2
       - QBT_WEBUI_PORT=8080
       - TZ=Asia/Kathmandu
     image: qbittorrentofficial/qbittorrent-nox@sha256:85fe2690f418dabffc4907276b3cdffcb7880c7114157b32f932d3b97bac45af
