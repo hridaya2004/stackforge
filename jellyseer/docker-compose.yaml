@@ -1,6 +1,6 @@
 services:
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: fallenbagel/jellyseerr@sha256:4538137bc5af902dece165f2bf73776d9cf4eafb6dd714670724af8f3eb77764
     container_name: jellyseerr
     environment:
       - LOG_LEVEL=debug

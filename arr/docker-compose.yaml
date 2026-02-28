@@ -1,6 +1,6 @@
 services:
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr@sha256:7962759d99d7e125e108e0f5e7f3cdbcd36161776d058d1d9b7153b92ef1af9e
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=debug
@@ -14,7 +14,7 @@ services:
   prowlarr:
     depends_on:
       - flaresolverr
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: lscr.io/linuxserver/prowlarr@sha256:e74a1e093dcc223d671d4b7061e2b4946f1989a4d3059654ff4e623b731c9134
     container_name: prowlarr
     environment:
       - TZ=Asia/Kathmandu
@@ -33,7 +33,7 @@ services:
       - QBT_VERSION=5.1.0-1
       - QBT_WEBUI_PORT=8080
       - TZ=Asia/Kathmandu
-    image: qbittorrentofficial/qbittorrent-nox:latest
+    image: qbittorrentofficial/qbittorrent-nox@sha256:85fe2690f418dabffc4907276b3cdffcb7880c7114157b32f932d3b97bac45af
     ports:
       - 6881:6881/tcp
       - 6881:6881/udp
@@ -53,7 +53,7 @@ services:
   radarr:
     depends_on:
       - downloader
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr@sha256:6d3e68474ea146f995af98d3fb2cb1a14e2e4457ddaf035aa5426889e2f9249c
     container_name: radarr
     environment:
       - TZ=Asia/Kathmandu
@@ -70,7 +70,7 @@ services:
   sonarr:
     depends_on:
       - downloader
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr@sha256:37be832b78548e3f55f69c45b50e3b14d18df1b6def2a4994258217e67efb1a1
     container_name: sonarr
     environment:
       - TZ=Asia/Kathmandu
