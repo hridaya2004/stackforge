@@ -1,0 +1,20 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    volumes:
+      - ./data/config:/config:z
+      - ./data/cache:/cache:z
+      - /media/anime:/anime:z
+      - /media/movies:/movies:z
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    restart: "unless-stopped"
+    ports:
+      - 8096:8096
+    networks:
+      - media_network
+
+networks:
+  media_network:
+    external: true

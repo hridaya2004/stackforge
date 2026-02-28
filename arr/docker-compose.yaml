@@ -1,0 +1,89 @@
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Asia/Kathmandu
+    ports:
+      - 8191:8191
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  prowlarr:
+    depends_on:
+      - flaresolverr
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - TZ=Asia/Kathmandu
+    volumes:
+      - ./data/prowlarr:/config:z
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  downloader:
+    container_name: downloader
+    environment:
+      - QBT_LEGAL_NOTICE=confirm
+      - QBT_VERSION=5.1.0-1
+      - QBT_WEBUI_PORT=8080
+      - TZ=Asia/Kathmandu
+    image: qbittorrentofficial/qbittorrent-nox:latest
+    ports:
+      - 6881:6881/tcp
+      - 6881:6881/udp
+      - 8080:8080/tcp
+    read_only: true
+    stop_grace_period: 30m
+    tmpfs:
+      - /tmp
+    tty: true
+    volumes:
+      - ./data/downloader:/config:z
+      - /media/downloads:/downloads:z
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  radarr:
+    depends_on:
+      - downloader
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - TZ=Asia/Kathmandu
+    volumes:
+      - ./data/radarr:/config:z
+      - /media/movies:/movies:z
+      - /media/downloads:/downloads:z
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  sonarr:
+    depends_on:
+      - downloader
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - TZ=Asia/Kathmandu
+    volumes:
+      - ./data/sonarr:/config:z
+      - /media/anime:/series:z
+      - /media/downloads:/downloads:z
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      - media_network
+
+networks:
+  media_network:
+    external: true
