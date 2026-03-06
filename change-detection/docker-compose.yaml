@@ -1,6 +1,6 @@
 services:
   changedetection:
-    image: lscr.io/linuxserver/changedetection.io@sha256:2059a8ae07d8a92675f8bd2a09d16690201206e8b3e30427bac6a92b0bb544d8
+    image: lscr.io/linuxserver/changedetection.io@sha256:2989ddbb53049783642c9e4f86dd934c3f659b91b512e588a4d4fd013ff0501e
     container_name: changedetection
     environment:
       - TZ=Asia/Kathmandu

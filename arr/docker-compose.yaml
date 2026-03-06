@@ -14,7 +14,7 @@ services:
   prowlarr:
     depends_on:
       - flaresolverr
-    image: lscr.io/linuxserver/prowlarr@sha256:e74a1e093dcc223d671d4b7061e2b4946f1989a4d3059654ff4e623b731c9134
+    image: lscr.io/linuxserver/prowlarr@sha256:a8fe7b9c502f979146b6d0f22438b825c38e068241bb8a708c473062dffdbb03
     container_name: prowlarr
     environment:
       - TZ=Asia/Kathmandu
@@ -53,7 +53,7 @@ services:
   radarr:
     depends_on:
       - downloader
-    image: lscr.io/linuxserver/radarr@sha256:6d3e68474ea146f995af98d3fb2cb1a14e2e4457ddaf035aa5426889e2f9249c
+    image: lscr.io/linuxserver/radarr@sha256:a360633a3682d41e96f71a07ff36ecbdf2394a9628465b84b0a8437087715b41
     container_name: radarr
     environment:
       - TZ=Asia/Kathmandu
